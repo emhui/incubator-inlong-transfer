@@ -25,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.inlong.common.enums.DataTypeEnum;
 import org.apache.inlong.manager.common.consts.SourceType;
 import org.apache.inlong.manager.pojo.source.StreamSource;
+import org.apache.inlong.manager.pojo.source.autopush.AutoPushSource;
+import org.apache.inlong.manager.pojo.source.file.FileSource;
 import org.apache.inlong.manager.pojo.source.kafka.KafkaOffset;
 import org.apache.inlong.manager.pojo.source.kafka.KafkaSource;
 import org.apache.inlong.manager.pojo.source.mongodb.MongoDBSource;
@@ -96,6 +98,10 @@ public class ExtractNodeUtils {
                 return createExtractNode((MongoDBSource) sourceInfo);
             case SourceType.TUBEMQ:
                 return createExtractNode((TubeMQSource) sourceInfo);
+            case SourceType.FILE:
+                return createExtractNode((FileSource) sourceInfo);
+            case SourceType.AUTO_PUSH:
+                return createExtractNode((AutoPushSource)sourceInfo);
             default:
                 throw new IllegalArgumentException(
                         String.format("Unsupported sourceType=%s to create extractNode", sourceType));
@@ -389,6 +395,126 @@ public class ExtractNodeUtils {
                 source.getSessionKey(),
                 source.getTid()
         );
+    }
+
+    /**
+     * Create Pulsar extract node
+     *
+     * @param source File source info
+     * @return Pulsar extract node info
+     */
+    public static PulsarExtractNode createExtractNode(FileSource source) {
+        List<FieldInfo> fieldInfos = parseFieldInfos(source.getFieldList(), source.getSourceName());
+//        String fullTopicName =
+//                source.getTenant() + "/" + pulsarSource.getNamespace() + "/" + pulsarSource.getTopic();
+        String fullTopicName = "";
+                // source.getTenant() + "/" + pulsarSource.getNamespace() + "/" + pulsarSource.getTopic();
+
+        Format format;
+        DataTypeEnum dataType = DataTypeEnum.forName(source.getSerializationType());
+        switch (dataType) {
+            case CSV:
+                format = new CsvFormat();
+                break;
+            case AVRO:
+                format = new AvroFormat();
+                break;
+            case JSON:
+                format = new JsonFormat();
+                break;
+            case CANAL:
+                format = new CanalJsonFormat();
+                break;
+            case DEBEZIUM_JSON:
+                format = new DebeziumJsonFormat();
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unsupported dataType=%s for pulsar source", dataType));
+        }
+        /**
+        PulsarScanStartupMode startupMode = PulsarScanStartupMode.forName(pulsarSource.getScanStartupMode());
+        final String primaryKey = pulsarSource.getPrimaryKey();
+        final String serviceUrl = pulsarSource.getServiceUrl();
+        final String adminUrl = pulsarSource.getAdminUrl();
+        Map<String, String> properties = parseProperties(pulsarSource.getProperties());
+         **/
+        Map<String, String> properties = parseProperties(source.getProperties());
+        return new PulsarExtractNode(source.getSourceName(),
+                source.getSourceName(),
+                fieldInfos,
+                null,
+                properties,
+                fullTopicName,
+                // adminUrl,
+                "",
+                // serviceUrl,
+                "",
+                format,
+                // startupMode.getValue(),
+                "earliest",
+                //  primaryKey);
+                "");
+    }
+
+    /**
+     * Create Pulsar extract node
+     *
+     * @param source Auto push source info
+     * @return Pulsar extract node info
+     */
+    public static PulsarExtractNode createExtractNode(AutoPushSource source) {
+        List<FieldInfo> fieldInfos = parseFieldInfos(source.getFieldList(), source.getSourceName());
+//        String fullTopicName =
+//                source.getTenant() + "/" + pulsarSource.getNamespace() + "/" + pulsarSource.getTopic();
+        String fullTopicName = "";
+        // source.getTenant() + "/" + pulsarSource.getNamespace() + "/" + pulsarSource.getTopic();
+
+        Format format;
+        DataTypeEnum dataType = DataTypeEnum.forName(source.getSerializationType());
+        switch (dataType) {
+            case CSV:
+                format = new CsvFormat();
+                break;
+            case AVRO:
+                format = new AvroFormat();
+                break;
+            case JSON:
+                format = new JsonFormat();
+                break;
+            case CANAL:
+                format = new CanalJsonFormat();
+                break;
+            case DEBEZIUM_JSON:
+                format = new DebeziumJsonFormat();
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unsupported dataType=%s for pulsar source", dataType));
+        }
+        /**
+         PulsarScanStartupMode startupMode = PulsarScanStartupMode.forName(pulsarSource.getScanStartupMode());
+         final String primaryKey = pulsarSource.getPrimaryKey();
+         final String serviceUrl = pulsarSource.getServiceUrl();
+         final String adminUrl = pulsarSource.getAdminUrl();
+         Map<String, String> properties = parseProperties(pulsarSource.getProperties());
+         **/
+        Map<String, String> properties = parseProperties(source.getProperties());
+        return new PulsarExtractNode(source.getSourceName(),
+                source.getSourceName(),
+                fieldInfos,
+                null,
+                properties,
+                fullTopicName,
+                // adminUrl,
+                "",
+                // serviceUrl,
+                "",
+                format,
+                // startupMode.getValue(),
+                "earliest",
+                //  primaryKey);
+                "");
     }
 
     /**
