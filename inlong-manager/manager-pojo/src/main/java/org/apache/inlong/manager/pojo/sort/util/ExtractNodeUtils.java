@@ -432,13 +432,7 @@ public class ExtractNodeUtils {
                 throw new IllegalArgumentException(
                         String.format("Unsupported dataType=%s for pulsar source", dataType));
         }
-        /**
-        PulsarScanStartupMode startupMode = PulsarScanStartupMode.forName(pulsarSource.getScanStartupMode());
-        final String primaryKey = pulsarSource.getPrimaryKey();
-        final String serviceUrl = pulsarSource.getServiceUrl();
-        final String adminUrl = pulsarSource.getAdminUrl();
-        Map<String, String> properties = parseProperties(pulsarSource.getProperties());
-         **/
+
         Map<String, String> properties = parseProperties(source.getProperties());
         return new PulsarExtractNode(source.getSourceName(),
                 source.getSourceName(),
@@ -492,13 +486,7 @@ public class ExtractNodeUtils {
                 throw new IllegalArgumentException(
                         String.format("Unsupported dataType=%s for pulsar source", dataType));
         }
-        /**
-         PulsarScanStartupMode startupMode = PulsarScanStartupMode.forName(pulsarSource.getScanStartupMode());
-         final String primaryKey = pulsarSource.getPrimaryKey();
-         final String serviceUrl = pulsarSource.getServiceUrl();
-         final String adminUrl = pulsarSource.getAdminUrl();
-         Map<String, String> properties = parseProperties(pulsarSource.getProperties());
-         **/
+
         Map<String, String> properties = parseProperties(source.getProperties());
         return new PulsarExtractNode(source.getSourceName(),
                 source.getSourceName(),
